@@ -2,6 +2,7 @@ package parser
 
 import (
 	"encoding/json"
+	"feedback-service/storage"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -12,15 +13,20 @@ var (
 	Token      string
 	httpClient = &http.Client{}
 	cooks      []*http.Cookie
+	total      int
 )
 
 const (
 	baseUrl = "https://api.delivery-club.ru/api1.2"
+	limit   = 1000
+	chainId = 28720
 )
 
 func Run() {
 	getToken()
 	getReviews()
+
+	//storage.GetOne()
 }
 
 func getToken() {
@@ -45,7 +51,25 @@ func getToken() {
 }
 
 func getReviews() {
-	url := fmt.Sprintf("%s/reviews?chainId=28720&limit=20&offset=0&cacheBreaker=1572361583", baseUrl)
+	offset := 0
+
+	request(0)
+
+	steps := total / limit
+
+	for i := 0; i < steps; i++ {
+		offset = offset + limit
+		request(offset)
+		fmt.Println(steps)
+	}
+
+}
+
+func request(offset int) {
+
+	url := fmt.Sprintf("%s/reviews?chainId=%v&limit=%v&offset=%v&cacheBreaker=1572361583", baseUrl, chainId, limit, offset)
+
+	log.Println("offset = ", offset)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -65,7 +89,7 @@ func getReviews() {
 	}
 	defer resp.Body.Close()
 
-	reviews := &Reviews{}
+	reviews := &storage.Reviews{}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -74,7 +98,8 @@ func getReviews() {
 
 	_ = json.Unmarshal(body, &reviews)
 
-	//arr := reviews.Review
-	//
-	//fmt.Println(arr[0])
+	reviews.Write()
+
+	total = reviews.Total
+
 }
