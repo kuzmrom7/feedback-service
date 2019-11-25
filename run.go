@@ -1,7 +1,7 @@
 package main
 
 import (
-	p "feedback-service/parser"
+	"feedback-service/api"
 	"feedback-service/storage"
 	"log"
 )
@@ -12,5 +12,10 @@ func main() {
 	}
 	defer storage.Close()
 
-	p.Run()
+	err := api.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//p.Run()
 }
