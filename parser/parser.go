@@ -32,9 +32,8 @@ func Run() {
 	} else {
 		if len(reviews) != 0 {
 			lastReview = reviews[0]
+			log.Println("Last review by", lastReview.Author)
 		}
-
-		fmt.Println("last", lastReview)
 
 		getToken()
 		getReviews()
@@ -77,6 +76,7 @@ func getReviews() {
 		}
 		offset = offset + limit
 		request(offset)
+		log.Println("Parsed", offset, "reviews")
 	}
 
 }
@@ -95,7 +95,6 @@ func request(offset int) {
 	}
 
 	req.Header.Set("x-user-authorization", Token)
-	fmt.Println(Token)
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -142,6 +141,9 @@ func validate(rws []storage.Review) []storage.Review {
 			if len(slicedRws) == 0 {
 				return nil
 			}
+
+			log.Println("Detected", len(slicedRws), "new reviews!")
+
 			return slicedRws
 		}
 	}
