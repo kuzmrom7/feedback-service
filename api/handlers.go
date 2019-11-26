@@ -12,5 +12,13 @@ func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 func handleGetReviews(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	storage.GetList().Respond(w)
+
+	var rq storage.ReviewQuery
+
+	rq.Sort = r.URL.Query().Get("sort")
+	rq.Filter = r.URL.Query().Get("filter")
+
+	fmt.Println(rq.Sort, "===")
+
+	storage.GetList(rq).Respond(w)
 }

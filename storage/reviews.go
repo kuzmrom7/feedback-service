@@ -2,6 +2,7 @@ package storage
 
 import (
 	response "feedback-service/utils"
+	"fmt"
 	"log"
 )
 
@@ -14,15 +15,33 @@ func (r *Reviews) Write() *response.Response {
 	return nil
 }
 
-func GetList() *response.Response {
+func queryBuilder(rq ReviewQuery) string {
 
-	var reviews Reviews
+	sort := "rated"
 
-	if err := db.Select(&reviews.Data, `
-		SELECT r.id,r.author, r.body, r.orderhash, r.rated, r.rating, r.created, r.updated
+	if len(rq.Sort) > 0 {
+		sort = rq.Sort
+	}
+
+	q := fmt.Sprintf(`SELECT r.id,r.author, r.body, r.orderhash, r.rated, r.rating, r.created, r.updated
 		FROM review r
-		ORDER BY rated desc
-	`); err != nil {
+		ORDER BY %s desc
+		limit 100`, sort)
+
+	return q
+
+}
+
+func GetList(rq ReviewQuery) *response.Response {
+
+	var (
+		reviews Reviews
+		q       string
+	)
+
+	q = queryBuilder(rq)
+
+	if err := db.Select(&reviews.Data, q); err != nil {
 		log.Println(err)
 		return response.New("select error", false).WithError(err)
 	}

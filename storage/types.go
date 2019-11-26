@@ -15,3 +15,8 @@ type Reviews struct {
 	Data  []Review `json:"reviews"`
 	Total int      `json:"total"`
 }
+
+type ReviewQuery struct {
+	Sort   string
+	Filter string
+}
