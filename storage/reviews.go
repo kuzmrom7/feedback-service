@@ -8,7 +8,7 @@ import (
 
 func (r *Reviews) Write() *response.Response {
 
-	_, err := db.NamedExec("INSERT INTO review ( author, body, orderhash, rated,rating) VALUES ( :author, :body, :orderhash, :rated, :rating)", r.Data)
+	_, err := db.NamedExec("INSERT INTO review ( author,answers, body, orderhash, rated,rating) VALUES ( :author, :answers, :body, :orderhash, :rated, :rating)", r.Data)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,7 +33,7 @@ func queryBuilder(rq ReviewQuery) string {
 		offset = rq.Offset
 	}
 
-	q := fmt.Sprintf(`SELECT r.id,r.author, r.body, r.orderhash, r.rated, r.rating, r.created, r.updated
+	q := fmt.Sprintf(`SELECT *
 		FROM review r
 		ORDER BY %s DESC
 		OFFSET %s

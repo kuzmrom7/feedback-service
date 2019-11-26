@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"reflect"
 )
 
 var (
@@ -114,7 +115,7 @@ func request(offset int) {
 		log.Println(err)
 	}
 
-	if (storage.Review{}) != lastReview {
+	if !reflect.DeepEqual(storage.Reviews{}, lastReview) {
 		data := validate(reviews.Data)
 		if data == nil {
 			return
