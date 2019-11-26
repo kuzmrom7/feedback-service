@@ -14,6 +14,8 @@ var (
 	httpClient = &http.Client{}
 	cooks      []*http.Cookie
 	total      int
+	lastReview storage.Review
+	parsed     bool
 )
 
 const (
@@ -23,10 +25,21 @@ const (
 )
 
 func Run() {
-	getToken()
-	getReviews()
+	reviews, err := storage.GetLast()
+	if err != nil {
+		log.Println(err)
+	} else {
+		if len(reviews) != 0 {
+			lastReview = reviews[0]
+		}
 
-	//storage.GetOne()
+		fmt.Println("last", lastReview)
+
+		getToken()
+		getReviews()
+
+	}
+
 }
 
 func getToken() {
@@ -58,9 +71,11 @@ func getReviews() {
 	steps := total / limit
 
 	for i := 0; i < steps; i++ {
+		if parsed {
+			continue
+		}
 		offset = offset + limit
 		request(offset)
-		fmt.Println(steps)
 	}
 
 }
@@ -69,11 +84,9 @@ func request(offset int) {
 
 	url := fmt.Sprintf("%s/reviews?chainId=%v&limit=%v&offset=%v&cacheBreaker=1572361583", baseUrl, chainId, limit, offset)
 
-	log.Println("offset = ", offset)
-
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	for _, cookie := range cooks {
@@ -85,7 +98,7 @@ func request(offset int) {
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer resp.Body.Close()
 
@@ -93,13 +106,44 @@ func request(offset int) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
-	_ = json.Unmarshal(body, &reviews)
+	err = json.Unmarshal(body, &reviews)
+	if err != nil {
+		log.Println(err)
+	}
+
+	if (storage.Review{}) != lastReview {
+		data := validate(reviews.Data)
+		if data == nil {
+			return
+		}
+
+		reviews.Data = data
+	}
 
 	reviews.Write()
 
 	total = reviews.Total
+
+}
+
+func validate(rws []storage.Review) []storage.Review {
+
+	for i := range rws {
+		rw := rws[i]
+		if rw.OrderHash == lastReview.OrderHash {
+
+			slicedRws := rws[0:i]
+			parsed = true
+
+			if len(slicedRws) == 0 {
+				return nil
+			}
+			return slicedRws
+		}
+	}
+	return rws
 
 }
