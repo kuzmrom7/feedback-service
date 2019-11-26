@@ -18,15 +18,26 @@ func (r *Reviews) Write() *response.Response {
 func queryBuilder(rq ReviewQuery) string {
 
 	sort := "rated"
+	limit := "100"
+	offset := "0"
 
 	if len(rq.Sort) > 0 {
 		sort = rq.Sort
 	}
 
+	if len(rq.Limit) > 0 {
+		limit = rq.Limit
+	}
+
+	if len(rq.Offset) > 0 {
+		offset = rq.Offset
+	}
+
 	q := fmt.Sprintf(`SELECT r.id,r.author, r.body, r.orderhash, r.rated, r.rating, r.created, r.updated
 		FROM review r
-		ORDER BY %s desc
-		limit 100`, sort)
+		ORDER BY %s DESC
+		OFFSET %s
+		limit %s`, sort, offset, limit)
 
 	return q
 

@@ -15,10 +15,11 @@ func handleGetReviews(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 
 	var rq storage.ReviewQuery
 
-	rq.Sort = r.URL.Query().Get("sort")
-	rq.Filter = r.URL.Query().Get("filter")
-
-	fmt.Println(rq.Sort, "===")
+	q := r.URL.Query()
+	rq.Sort = q.Get("sort")
+	rq.Filter = q.Get("filter")
+	rq.Offset = q.Get("offset")
+	rq.Limit = q.Get("limit")
 
 	storage.GetList(rq).Respond(w)
 }
