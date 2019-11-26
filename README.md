@@ -17,6 +17,8 @@
 API необходимо задокументировать с помощью ​https://apiblueprint.org/.​
 
 
-## Реализация
+## Docs
 
-[API Docs](./docs/api.md)
+- [API Docs](./docs/api.md)
+
+- [How to run](./docs/instructions.md)
