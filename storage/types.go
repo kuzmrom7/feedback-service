@@ -20,8 +20,8 @@ type Reviews struct {
 }
 
 type ReviewQuery struct {
-	Sort   string
-	Filter string
-	Limit  string
-	Offset string
+	Sort    string
+	Limit   string
+	Offset  string
+	Answers string
 }

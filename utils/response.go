@@ -2,7 +2,6 @@ package response
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -16,7 +15,6 @@ type Response struct {
 
 func (r *Response) WithData(data interface{}) *Response {
 	r.Data = data
-	fmt.Println(data == nil)
 	return r
 }
 

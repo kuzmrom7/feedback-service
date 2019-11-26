@@ -15,12 +15,12 @@ CREATE EXTENSION "uuid-ossp";
 CREATE TABLE review
 (
     id        UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
-    answers   JSONB                     DEFAULT '[]',
     author    VARCHAR(256)              DEFAULT '',
     body      VARCHAR                   DEFAULT '',
+    rating    INTEGER                   DEFAULT 0,
+    answers   JSONB                     DEFAULT '[]',
     orderHash VARCHAR(256)              DEFAULT '',
     rated     VARCHAR(256)              DEFAULT '',
-    rating    INTEGER                   DEFAULT 0,
     created   TIMESTAMP                 DEFAULT now(),
     updated   TIMESTAMP                 DEFAULT now()
 );

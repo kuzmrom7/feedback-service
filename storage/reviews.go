@@ -2,7 +2,6 @@ package storage
 
 import (
 	response "feedback-service/utils"
-	"fmt"
 	"log"
 )
 
@@ -15,34 +14,6 @@ func (r *Reviews) Write() *response.Response {
 	return nil
 }
 
-func queryBuilder(rq ReviewQuery) string {
-
-	sort := "rated"
-	limit := "100"
-	offset := "0"
-
-	if len(rq.Sort) > 0 {
-		sort = rq.Sort
-	}
-
-	if len(rq.Limit) > 0 {
-		limit = rq.Limit
-	}
-
-	if len(rq.Offset) > 0 {
-		offset = rq.Offset
-	}
-
-	q := fmt.Sprintf(`SELECT *
-		FROM review r
-		ORDER BY %s DESC
-		OFFSET %s
-		limit %s`, sort, offset, limit)
-
-	return q
-
-}
-
 func GetList(rq ReviewQuery) *response.Response {
 
 	var (
@@ -50,7 +21,7 @@ func GetList(rq ReviewQuery) *response.Response {
 		q       string
 	)
 
-	q = queryBuilder(rq)
+	q = getListQueryBuilder(rq)
 
 	if err := db.Select(&reviews.Data, q); err != nil {
 		log.Println(err)
