@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"strconv"
 )
 
 func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -17,9 +18,9 @@ func handleGetReviews(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 
 	q := r.URL.Query()
 	rq.Sort = q.Get("sort")
-	rq.Offset = q.Get("offset")
 	rq.Limit = q.Get("limit")
 	rq.Answers = q.Get("answers")
+	rq.Page, _ = strconv.Atoi(q.Get("page"))
 
 	storage.GetList(rq).Respond(w)
 }
