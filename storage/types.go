@@ -21,8 +21,6 @@ type Reviews struct {
 
 type ReviewQuery struct {
 	Sort    string
-	Limit   string
-	Offset  string
 	Answers string
 	Page    int
 }

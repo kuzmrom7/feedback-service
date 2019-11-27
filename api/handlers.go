@@ -18,7 +18,6 @@ func handleGetReviews(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 
 	q := r.URL.Query()
 	rq.Sort = q.Get("sort")
-	rq.Limit = q.Get("limit")
 	rq.Answers = q.Get("answers")
 	rq.Page, _ = strconv.Atoi(q.Get("page"))
 

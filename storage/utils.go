@@ -16,10 +16,6 @@ func getListQueryBuilder(rq ReviewQuery) string {
 		sort = rq.Sort
 	}
 
-	if len(rq.Limit) > 0 {
-		limit = rq.Limit
-	}
-
 	if len(rq.Answers) > 0 {
 		if rq.Answers == "true" {
 			filters = "where answers != '[]'"

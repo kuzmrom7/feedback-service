@@ -16,11 +16,8 @@ This method return reviews
 
 + Query Parameters
 
-    + limit (number, optional)
-        + Default: `100`
-        
-    + offset (number, optional)
-        + Default: `0`
+    + page (number)
+        + Default: `1`
         
     + sort (string)
         + rate - sorting by date 
