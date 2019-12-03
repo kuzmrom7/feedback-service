@@ -2,7 +2,7 @@
 
 **You need a PostgreSQL server**
 
- Run SQL script [Create table script](../storage/migrate/db.postgres.sql)
+ Run SQL script [Create table script](../contrib/db.postgres.sql)
 
 
 

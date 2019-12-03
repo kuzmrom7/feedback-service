@@ -1,9 +1,10 @@
 package storage
 
 import (
-	response "feedback-service/utils"
 	"log"
 	"math"
+
+	response "feedback-service/pkg/utils"
 )
 
 func (r *Reviews) Write() *response.Response {

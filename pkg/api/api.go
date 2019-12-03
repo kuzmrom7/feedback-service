@@ -1,11 +1,12 @@
 package api
 
 import (
-	"github.com/gorilla/handlers"
-	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/gorilla/handlers"
+	"github.com/julienschmidt/httprouter"
 )
 
 func routes() *httprouter.Router {

@@ -1,11 +1,13 @@
 package api
 
 import (
-	"feedback-service/storage"
 	"fmt"
-	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
+
+	"github.com/julienschmidt/httprouter"
+
+	"feedback-service/pkg/storage"
 )
 
 func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"feedback-service/api"
-	"feedback-service/parser"
-	"feedback-service/storage"
 	"log"
+
+	"feedback-service/pkg/api"
+	"feedback-service/pkg/parser"
+	"feedback-service/pkg/storage"
 )
 
 func main() {

@@ -2,17 +2,18 @@ package parser
 
 import (
 	"encoding/json"
-	"feedback-service/storage"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"reflect"
+
+	"feedback-service/pkg/storage"
 )
 
 var (
 	Token      string
-	httpClient = &http.Client{}
+	httpClient  = &http.Client{}
 	cooks      []*http.Cookie
 	total      int
 	lastReview storage.Review
