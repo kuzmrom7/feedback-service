@@ -4,9 +4,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gorilla/handlers"
 	"github.com/julienschmidt/httprouter"
+
+	"feedback-service/pkg/config"
 )
 
 func routes() *httprouter.Router {
@@ -18,18 +21,20 @@ func routes() *httprouter.Router {
 	return r
 }
 
-func Run() error {
+func Run(cfg *config.ServerConfigurations) error {
 	routes := routes()
 
 	var handler http.Handler
 
 	handler = handlers.LoggingHandler(os.Stdout, routes)
 
+	p := strconv.Itoa(cfg.Port)
+
 	srv := &http.Server{
-		Addr:    ":" + "8080",
+		Addr:    ":" + p,
 		Handler: handler,
 	}
 
-	log.Printf("server started on %s\n", "8080")
+	log.Printf("server started on %s\n", p)
 	return srv.ListenAndServe()
 }

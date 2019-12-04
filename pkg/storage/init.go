@@ -1,17 +1,23 @@
 package storage
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"log"
+
+	"feedback-service/pkg/config"
 )
 
 var db *sqlx.DB
 
-func Connect() error {
+func Connect(cfg *config.DatabaseConfigurations) error {
 	var err error
 
-	db, err = sqlx.Connect("postgres", "user=root password=arbuz dbname=feedback_service sslmode=disable")
+	src := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s", cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSSLMode)
+
+	db, err = sqlx.Connect("postgres", src)
 	if err != nil {
 		return err
 	}

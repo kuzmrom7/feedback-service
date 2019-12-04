@@ -1,0 +1,8 @@
+server:
+  port: 8080
+
+database:
+  dbname: "feedback_service"
+  dbsslmode: "disable"
+  dbuser: "root"
+  dbpassword: "arbuz"

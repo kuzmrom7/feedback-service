@@ -1,0 +1,8 @@
+server:
+  port: YOUR PORT
+
+database:
+  dbname: "YOUR NAME"
+  dbsslmode: "YOUR MODE"
+  dbuser: "YOUR USER"
+  dbpassword: "YOUR PASSWORD"

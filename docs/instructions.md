@@ -2,7 +2,7 @@
 
 **You need a PostgreSQL server**
 
- Run SQL script [Create table script](../contrib/db.postgres.sql)
+ Run SQL script [Create table script](../contrib/sql/db.postgres.sql)
 
 
 
@@ -13,13 +13,14 @@
     ```
     go mod download
     ```
+2. Create config.yml in ./contrib
 
-2. Build
+3. Build
 
     ```
     go build -o main .
     ```
-3. Run
+4. Run
     ```
     ./main 
     ```
