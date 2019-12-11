@@ -42,7 +42,10 @@ func getResponse(ps int, page int, reviews []Review) ResponseReviews {
 
 	nxtp := 0
 
-	if ps >= page+1 {
+	if page <= 0 {
+		nxtp = 0
+		page = 0
+	} else if ps >= page+1 {
 		nxtp = page + 1
 	} else {
 		nxtp = -1
