@@ -2,7 +2,9 @@ server:
   port: 8080
 
 database:
-  dbname: "feedback_service"
+  dbname: "postgres"
+  dbhost: "localhost"
   dbsslmode: "disable"
-  dbuser: "root"
-  dbpassword: "arbuz"
+  dbuser: "postgres"
+  dbpassword: "test"
+  dbport: 9920

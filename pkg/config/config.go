@@ -12,6 +12,7 @@ type ServerConfigurations struct {
 type DatabaseConfigurations struct {
 	DBName     string
 	DBPort     string
+	DBHost     string
 	DBUser     string
 	DBPassword string
 	DBSSLMode  string

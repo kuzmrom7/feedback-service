@@ -13,7 +13,7 @@ import (
 
 var (
 	Token      string
-	httpClient  = &http.Client{}
+	httpClient = &http.Client{}
 	cooks      []*http.Cookie
 	total      int
 	lastReview storage.Review
@@ -27,23 +27,20 @@ const (
 )
 
 func Run() {
-	reviews, err := storage.GetLast()
+	review, err := storage.GetLast()
 	if err != nil {
 		log.Println(err)
-	} else {
-		if len(reviews) != 0 {
-			lastReview = reviews[0]
-			log.Println("Last review by", lastReview.Author)
-		}
-
-		getToken()
-		getReviews()
-
+		return
 	}
 
+	lastReview = review
+	log.Println("Last review found", lastReview)
+
+	setToken()
+	getReviews()
 }
 
-func getToken() {
+func setToken() {
 	url := fmt.Sprintf("%s/user/login", baseUrl)
 	resp, err := httpClient.Post(url, "", nil)
 	if err != nil {
@@ -61,7 +58,6 @@ func getToken() {
 
 	Token = fmt.Sprintf("%v", result["token"])
 	cooks = resp.Cookies()
-
 }
 
 func getReviews() {
@@ -79,7 +75,6 @@ func getReviews() {
 		request(offset)
 		log.Println("Parsed", offset, "reviews")
 	}
-
 }
 
 func request(offset int) {
@@ -115,8 +110,9 @@ func request(offset int) {
 		log.Println(err)
 	}
 
+	/* Reviews that contain the latest in the storage */
 	if !reflect.DeepEqual(storage.Reviews{}, lastReview) {
-		data := validate(reviews.Data)
+		data := sliceExtra(reviews.Data)
 		if data == nil {
 			return
 		}
@@ -124,19 +120,20 @@ func request(offset int) {
 		reviews.Data = data
 	}
 
-	reviews.Write()
+	/* Save to storage */
+	reviews.WriteMany()
 
 	total = reviews.Total
 
 }
 
-func validate(rws []storage.Review) []storage.Review {
+func sliceExtra(reviews []storage.Review) []storage.Review {
 
-	for i := range rws {
-		rw := rws[i]
-		if rw.OrderHash == lastReview.OrderHash {
+	for i, review := range reviews {
 
-			slicedRws := rws[0:i]
+		if review.OrderHash == lastReview.OrderHash {
+
+			slicedRws := reviews[0:i]
 			parsed = true
 
 			if len(slicedRws) == 0 {
@@ -148,6 +145,6 @@ func validate(rws []storage.Review) []storage.Review {
 			return slicedRws
 		}
 	}
-	return rws
 
+	return reviews
 }

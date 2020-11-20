@@ -23,5 +23,5 @@ func handleGetReviews(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	rq.Answers = q.Get("answers")
 	rq.Page, _ = strconv.Atoi(q.Get("page"))
 
-	storage.GetList(rq).Respond(w)
+	storage.GetReviews(rq).Respond(w)
 }

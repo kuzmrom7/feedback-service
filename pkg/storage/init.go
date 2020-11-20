@@ -2,32 +2,41 @@ package storage
 
 import (
 	"fmt"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
-
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 
 	"feedback-service/pkg/config"
 )
 
-var db *sqlx.DB
+var db *gorm.DB
 
 func Connect(cfg *config.DatabaseConfigurations) error {
 	var err error
 
-	src := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s", cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSSLMode)
-
-	db, err = sqlx.Connect("postgres", src)
+	dsn := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s port=%s  host=%s", cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSSLMode, cfg.DBPort, cfg.DBHost)
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return err
 	}
 
-	log.Println("database connected")
+	log.Println("Database connected")
+	return nil
+}
+
+func Migrate() error {
+	if err := db.AutoMigrate(&Review{}); err != nil {
+		return err
+	}
+
+	log.Println("Migration success")
 	return nil
 }
 
 func Close() {
-	if err := db.Close(); err != nil {
+	sqlDB, err := db.DB()
+	err = sqlDB.Close()
+	if err != nil {
 		log.Println(err)
 	}
 }

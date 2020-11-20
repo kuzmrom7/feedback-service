@@ -1,13 +1,13 @@
 package main
 
 import (
+	"feedback-service/pkg/parser"
 	"log"
 
 	v "github.com/spf13/viper"
 
 	"feedback-service/pkg/api"
 	"feedback-service/pkg/config"
-	"feedback-service/pkg/parser"
 	"feedback-service/pkg/storage"
 )
 
@@ -34,9 +34,13 @@ func main() {
 	if err := storage.Connect(cfg.Database); err != nil {
 		log.Fatal(err)
 	}
+	err = storage.Migrate()
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer storage.Close()
 
-	parser.Run()
+	go parser.Run()
 
 	err = api.Run(cfg.Server)
 	if err != nil {
