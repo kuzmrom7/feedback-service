@@ -7,4 +7,4 @@ database:
   dbsslmode: "disable"
   dbuser: "postgres"
   dbpassword: "test"
-  dbport: 9920
+  dbport: 5432

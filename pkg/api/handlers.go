@@ -1,6 +1,7 @@
 package api
 
 import (
+	response "feedback-service/pkg/utils"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -23,5 +24,11 @@ func handleGetReviews(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	rq.Answers = q.Get("answers")
 	rq.Page, _ = strconv.Atoi(q.Get("page"))
 
-	storage.GetReviews(rq).Respond(w)
+	reviews, err := storage.GetReviews(rq)
+	if err != nil {
+		response.New("select error", false).WithError(err).Respond(w)
+	}
+	resp := storage.GetResponse(storage.GetPagesCount(), rq.Page, reviews)
+
+	response.New("success", true).WithData(&resp).Respond(w)
 }

@@ -1,58 +1,23 @@
 package storage
 
-import (
-	"fmt"
-	"strconv"
-)
+func GetResponse(pagesCount int, page int, reviews []Review) ResponseReviews {
 
-func getListQueryBuilder(rq ReviewQuery) string {
-
-	sort := "rated"
-	limit := "100"
-	offset := 0
-	filters := ""
-
-	if len(rq.Sort) > 0 {
-		sort = rq.Sort
+	if page == 0 {
+		page = 1
 	}
 
-	if len(rq.Answers) > 0 {
-		if rq.Answers == "true" {
-			filters = "where answers != '[]'"
-		}
-	}
-
-	if rq.Page > 0 {
-		l, _ := strconv.Atoi(limit)
-		offset = (rq.Page * l) - 100
-	}
-
-	q := fmt.Sprintf(`SELECT *
-		FROM review r
-		%s
-		ORDER BY %s DESC
-		OFFSET %v
-		limit %s`, filters, sort, offset, limit)
-
-	return q
-
-}
-
-func getResponse(ps int, page int, reviews []Review) ResponseReviews {
-
-	nxtp := 0
+	nextPage := 0
 
 	if page <= 0 {
-		nxtp = 0
+		nextPage = 0
 		page = 0
-	} else if ps >= page+1 {
-		nxtp = page + 1
+	} else if pagesCount >= page+1 {
+		nextPage = page + 1
 	} else {
-		nxtp = -1
+		nextPage = -1
 	}
 
-	resp := ResponseReviews{Pages: ps, Page: page, Reviews: reviews, NextPage: nxtp}
+	resp := ResponseReviews{Pages: pagesCount, Page: page, Reviews: reviews, NextPage: nextPage}
 
 	return resp
-
 }
