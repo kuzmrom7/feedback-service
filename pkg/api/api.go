@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/julienschmidt/httprouter"
 
-	"feedback-service/pkg/config"
+	"github.com/kuzmrom7/feedback-service/pkg/config"
 )
 
 func routes() *httprouter.Router {
@@ -21,7 +21,7 @@ func routes() *httprouter.Router {
 	return r
 }
 
-func Run(cfg *config.ServerConfigurations) error {
+func Run(cfg config.Server) error {
 	routes := routes()
 
 	var handler http.Handler

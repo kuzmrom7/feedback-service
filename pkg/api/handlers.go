@@ -1,14 +1,14 @@
 package api
 
 import (
-	response "feedback-service/pkg/utils"
 	"fmt"
+	response "github.com/kuzmrom7/feedback-service/pkg/utils"
 	"net/http"
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 
-	"feedback-service/pkg/storage"
+	"github.com/kuzmrom7/feedback-service/pkg/storage"
 )
 
 func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -16,7 +16,6 @@ func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 func handleGetReviews(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-
 	var rq storage.ReviewQuery
 
 	q := r.URL.Query()

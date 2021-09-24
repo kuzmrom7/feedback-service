@@ -1,6 +1,6 @@
-module feedback-service
+module github.com/kuzmrom7/feedback-service
 
-go 1.12
+go 1.14
 
 require (
 	github.com/gorilla/handlers v1.4.2

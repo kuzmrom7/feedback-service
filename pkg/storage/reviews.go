@@ -1,7 +1,7 @@
 package storage
 
 import (
-	response "feedback-service/pkg/utils"
+	response "github.com/kuzmrom7/feedback-service/pkg/utils"
 	"log"
 	"math"
 )

@@ -5,7 +5,6 @@
  Run SQL script [Create table script](../contrib/sql/db.postgres.sql)
 
 
-
 ## Run service
 
 1. Download dependencies 
@@ -28,6 +27,4 @@
 ----
 
 
-docker run --rm --name pg-docker -e POSTGRES_USER=qwerty POSTGRES_DB=feedback POSTGRES_PASSWORD=test -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data postgres
-
-
+docker run --rm -e POSTGRES_USER=qwerty POSTGRES_DB=feedback POSTGRES_PASSWORD=test -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data postgres

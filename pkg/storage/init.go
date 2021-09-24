@@ -6,12 +6,12 @@ import (
 	"gorm.io/gorm"
 	"log"
 
-	"feedback-service/pkg/config"
+	"github.com/kuzmrom7/feedback-service/pkg/config"
 )
 
 var db *gorm.DB
 
-func Connect(cfg *config.DatabaseConfigurations) error {
+func Connect(cfg config.Database) error {
 	var err error
 
 	dsn := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s port=%s  host=%s", cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSSLMode, cfg.DBPort, cfg.DBHost)

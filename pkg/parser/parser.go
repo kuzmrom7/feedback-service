@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"reflect"
 
-	"feedback-service/pkg/storage"
+	"github.com/kuzmrom7/feedback-service/pkg/storage"
 )
 
 var (

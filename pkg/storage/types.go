@@ -1,16 +1,18 @@
 package storage
 
 import (
-	"gorm.io/gorm"
+	"time"
 )
 
 type Review struct {
-	gorm.Model
-	Author    string `json:"author"`
-	Body      string `json:"body"`
-	OrderHash string `json:"orderHash"`
-	Rated     string `json:"rated" gorm:"type:time"`
-	Rating    int    `json:"rating"`
+	ID        uint      `json:"id" gorm:"primarykey"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Author    string    `json:"author"`
+	Body      string    `json:"body"`
+	OrderHash string    `json:"order_hash"`
+	Rated     string    `json:"rated" gorm:"type:time"`
+	Rating    int       `json:"rating"`
 }
 
 type Reviews struct {
