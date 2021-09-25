@@ -10,3 +10,6 @@ database:
   dbport: 5432
 
 parser:
+  base_url: "https://api.delivery-club.ru/api1.2"
+  limit: 1000
+  chain_id: 28720

@@ -8,6 +8,7 @@ import (
 type Config struct {
 	Server   Server
 	Database Database
+	Parser   Parser
 }
 
 type Server struct {
@@ -21,6 +22,12 @@ type Database struct {
 	DBUser     string
 	DBPassword string
 	DBSSLMode  string
+}
+
+type Parser struct {
+	BaseURL string `mapstructure:"base_url"`
+	Limit   int    `mapstructure:"limit"`
+	ChainId int64  `mapstructure:"chain_id"`
 }
 
 func Init() (*Config, error) {

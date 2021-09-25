@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/kuzmrom7/feedback-service/pkg/parser"
 	"github.com/kuzmrom7/feedback-service/pkg/repository"
 	"github.com/kuzmrom7/feedback-service/pkg/repository/postgres"
 	pg "gorm.io/driver/postgres"
@@ -25,12 +26,14 @@ func main() {
 	defer closeDB(db)
 
 	reviewsRepository := postgres.NewReviewsRepository(db)
+	prs := parser.NewParser(cfg.Parser,reviewsRepository)
+	srv := server.New(cfg.Server, reviewsRepository)
 
-	//go func() {
-	//	parser.Run()
-	//}()
+	go func() {
+		prs.Run()
+	}()
 
-	if err = server.New(cfg.Server, reviewsRepository).Run(); err != nil {
+	if err = srv.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -53,7 +56,6 @@ func initDB(cfg config.Database) (*gorm.DB, error) {
 	}
 
 	log.Println("Migration success")
-
 
 	return db, nil
 }

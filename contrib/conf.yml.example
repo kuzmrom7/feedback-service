@@ -6,3 +6,8 @@ database:
   dbsslmode: "YOUR MODE"
   dbuser: "YOUR USER"
   dbpassword: "YOUR PASSWORD"
+
+parser:
+  base_url: ""
+  limit:
+  chain_id:
