@@ -1,34 +1,45 @@
 package postgres
 
 import (
+	"github.com/kuzmrom7/feedback-service/pkg/repository"
+	"gorm.io/gorm"
 	"log"
-	"math"
 )
 
 const LIMIT = 100
 
-type Pages struct {
-	Total int `json:"total" db:"total"`
+type ReviewsRepository struct {
+	db *gorm.DB
 }
 
-func (r *Reviews) WriteMany() error {
-	db.Create(&r.Data)
+func NewReviewsRepository(db *gorm.DB) *ReviewsRepository {
+	return &ReviewsRepository{db: db}
+}
 
+func (r *ReviewsRepository) AddReviews(rw []repository.Review) error {
+	result := r.db.Create(rw)
+
+	if result.Error != nil {
+		return result.Error
+	}
 	return nil
 }
 
-func GetPagesCount() int {
+func (r *ReviewsRepository) GetReviewsCount() (int64, error) {
 	var total int64
 
-	db.Model(&Review{}).Count(&total)
-	totalPages := int(math.Ceil(float64(total) / float64(LIMIT)))
+	result := r.db.Model(&repository.Review{}).Count(&total)
 
-	return totalPages
+	if result.Error != nil {
+		return 0, result.Error
+	}
+
+	return total, nil
 }
 
-func GetReviews(rq ReviewQuery) ([]Review, error) {
+func (r *ReviewsRepository) GetReviews(rq repository.ReviewQuery) ([]repository.Review, error) {
 	var (
-		reviews []Review
+		reviews []repository.Review
 		offset  int
 	)
 
@@ -36,7 +47,7 @@ func GetReviews(rq ReviewQuery) ([]Review, error) {
 		offset = (rq.Page * LIMIT) - 100
 	}
 
-	if _, err := db.Limit(LIMIT).Offset(offset).Order("rated desc").Find(&reviews).DB(); err != nil {
+	if _, err := r.db.Limit(LIMIT).Offset(offset).Order("rated desc").Find(&reviews).DB(); err != nil {
 		log.Println(err)
 		return nil, err
 	}
@@ -44,9 +55,14 @@ func GetReviews(rq ReviewQuery) ([]Review, error) {
 	return reviews, nil
 }
 
-func GetLast() (Review, error) {
-	var review Review
-	db.Order("rated desc").Find(&review)
+func (r *ReviewsRepository) GetLastReview() (repository.Review, error) {
+	var review repository.Review
+	result := r.db.Order("rated desc").Find(&review)
+
+	if result.Error != nil {
+		return review, result.Error
+	}
 
 	return review, nil
 }
+

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/kuzmrom7/feedback-service/pkg/repository"
 	"log"
 	"net/http"
 	"strconv"
@@ -10,17 +11,18 @@ import (
 )
 
 type Server struct {
-	cfg config.Server
+	cfg               config.Server
+	reviewsRepository repository.ReviewsRepository
 }
 
-func New(cfg config.Server) Server {
-	return Server{cfg: cfg}
+func New(cfg config.Server, r repository.ReviewsRepository) *Server {
+	return &Server{cfg: cfg, reviewsRepository: r}
 }
 
 func (s *Server) Run() error {
 	router := httprouter.New()
 
-	router.GET("/reviews", handleGetReviews)
+	router.GET("/reviews", s.handleGetReviews)
 
 	p := strconv.Itoa(s.cfg.Port)
 

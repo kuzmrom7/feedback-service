@@ -1,8 +1,6 @@
-package postgres
+package repository
 
-import (
-	"time"
-)
+import "time"
 
 type Review struct {
 	ID        uint      `json:"id" gorm:"primarykey"`
@@ -24,4 +22,15 @@ type ReviewQuery struct {
 	Sort    string
 	Answers string
 	Page    int
+}
+
+type Pages struct {
+	Total int `json:"total" db:"total"`
+}
+
+type ReviewsRepository interface {
+	GetReviews(rq ReviewQuery) ([]Review, error)
+	GetLastReview() (Review, error)
+	GetReviewsCount() (int64, error)
+	AddReviews(rw []Review) error
 }

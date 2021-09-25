@@ -3,7 +3,7 @@ package parser
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/kuzmrom7/feedback-service/pkg/repository/postgres"
+	"github.com/kuzmrom7/feedback-service/pkg/repository"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,7 +15,7 @@ var (
 	httpClient = &http.Client{}
 	cooks      []*http.Cookie
 	total      int
-	lastReview postgres.Review
+	lastReview repository.Review
 	parsed     bool
 )
 
@@ -25,8 +25,16 @@ const (
 	chainId = 28720
 )
 
-func Run() {
-	review, err := postgres.GetLast()
+type Parser struct {
+	reviewsRepository repository.ReviewsRepository
+}
+
+func NewParser(rw repository.ReviewsRepository) *Parser {
+	return &Parser{reviewsRepository: rw}
+}
+
+func (p *Parser) Run() {
+	review, err := p.reviewsRepository.GetLastReview()
 	if err != nil {
 		log.Println(err)
 		return
@@ -35,11 +43,11 @@ func Run() {
 	lastReview = review
 	log.Println("Last review found", lastReview)
 
-	setToken()
-	getReviews()
+	p.setToken()
+	p.getReviews()
 }
 
-func setToken() {
+func (p *Parser) setToken() {
 	url := fmt.Sprintf("%s/user/login", baseUrl)
 	resp, err := httpClient.Post(url, "", nil)
 	if err != nil {
@@ -59,10 +67,10 @@ func setToken() {
 	cooks = resp.Cookies()
 }
 
-func getReviews() {
+func (p *Parser) getReviews() {
 	offset := 0
 
-	request(0)
+	p.request(0)
 
 	steps := total / limit
 
@@ -71,13 +79,12 @@ func getReviews() {
 			continue
 		}
 		offset = offset + limit
-		request(offset)
+		p.request(offset)
 		log.Println("Parsed", offset, "reviews")
 	}
 }
 
-func request(offset int) {
-
+func (p *Parser) request(offset int) {
 	url := fmt.Sprintf("%s/reviews?chainId=%v&limit=%v&offset=%v&cacheBreaker=1572361583", baseUrl, chainId, limit, offset)
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -97,7 +104,7 @@ func request(offset int) {
 	}
 	defer resp.Body.Close()
 
-	reviews := &postgres.Reviews{}
+	reviews := &repository.Reviews{}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -110,7 +117,7 @@ func request(offset int) {
 	}
 
 	/* Reviews that contain the latest in the repository */
-	if !reflect.DeepEqual(postgres.Reviews{}, lastReview) {
+	if !reflect.DeepEqual(repository.Reviews{}, lastReview) {
 		data := sliceExtra(reviews.Data)
 		if data == nil {
 			return
@@ -120,7 +127,7 @@ func request(offset int) {
 	}
 
 	/* Save to repository */
-	err = reviews.WriteMany()
+	err = p.reviewsRepository.AddReviews(reviews.Data)
 	if err != nil {
 		log.Println(err)
 		return
@@ -130,7 +137,7 @@ func request(offset int) {
 
 }
 
-func sliceExtra(reviews []postgres.Review) []postgres.Review {
+func sliceExtra(reviews []repository.Review) []repository.Review {
 
 	for i, review := range reviews {
 
