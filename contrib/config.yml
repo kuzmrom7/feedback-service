@@ -8,3 +8,5 @@ database:
   dbuser: "postgres"
   dbpassword: "test"
   dbport: 5432
+
+parser:

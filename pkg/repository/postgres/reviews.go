@@ -1,7 +1,6 @@
-package storage
+package postgres
 
 import (
-	response "github.com/kuzmrom7/feedback-service/pkg/utils"
 	"log"
 	"math"
 )
@@ -12,8 +11,9 @@ type Pages struct {
 	Total int `json:"total" db:"total"`
 }
 
-func (r *Reviews) WriteMany() *response.Response {
+func (r *Reviews) WriteMany() error {
 	db.Create(&r.Data)
+
 	return nil
 }
 

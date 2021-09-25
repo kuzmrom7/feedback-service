@@ -1,4 +1,4 @@
-package storage
+package postgres
 
 import (
 	"time"
@@ -24,11 +24,4 @@ type ReviewQuery struct {
 	Sort    string
 	Answers string
 	Page    int
-}
-
-type ResponseReviews struct {
-	Reviews  []Review `json:"reviews"`
-	Pages    int      `json:"totalPages"`
-	Page     int      `json:"currentPage"`
-	NextPage int      `json:"nextPage"`
 }

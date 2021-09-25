@@ -3,12 +3,11 @@ package parser
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/kuzmrom7/feedback-service/pkg/repository/postgres"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"reflect"
-
-	"github.com/kuzmrom7/feedback-service/pkg/storage"
 )
 
 var (
@@ -16,18 +15,18 @@ var (
 	httpClient = &http.Client{}
 	cooks      []*http.Cookie
 	total      int
-	lastReview storage.Review
+	lastReview postgres.Review
 	parsed     bool
 )
 
 const (
-	baseUrl = "https://api.delivery-club.ru/api1.2"
+	baseUrl = "https://server.delivery-club.ru/api1.2"
 	limit   = 1000
 	chainId = 28720
 )
 
 func Run() {
-	review, err := storage.GetLast()
+	review, err := postgres.GetLast()
 	if err != nil {
 		log.Println(err)
 		return
@@ -98,7 +97,7 @@ func request(offset int) {
 	}
 	defer resp.Body.Close()
 
-	reviews := &storage.Reviews{}
+	reviews := &postgres.Reviews{}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -110,8 +109,8 @@ func request(offset int) {
 		log.Println(err)
 	}
 
-	/* Reviews that contain the latest in the storage */
-	if !reflect.DeepEqual(storage.Reviews{}, lastReview) {
+	/* Reviews that contain the latest in the repository */
+	if !reflect.DeepEqual(postgres.Reviews{}, lastReview) {
 		data := sliceExtra(reviews.Data)
 		if data == nil {
 			return
@@ -120,14 +119,18 @@ func request(offset int) {
 		reviews.Data = data
 	}
 
-	/* Save to storage */
-	reviews.WriteMany()
+	/* Save to repository */
+	err = reviews.WriteMany()
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	total = reviews.Total
 
 }
 
-func sliceExtra(reviews []storage.Review) []storage.Review {
+func sliceExtra(reviews []postgres.Review) []postgres.Review {
 
 	for i, review := range reviews {
 

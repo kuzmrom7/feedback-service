@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/kuzmrom7/feedback-service/pkg/api"
 	"github.com/kuzmrom7/feedback-service/pkg/parser"
-	"github.com/kuzmrom7/feedback-service/pkg/storage"
+	"github.com/kuzmrom7/feedback-service/pkg/repository/postgres"
 	"log"
 
 	"github.com/kuzmrom7/feedback-service/pkg/config"
+	"github.com/kuzmrom7/feedback-service/pkg/server"
 )
 
 func main() {
@@ -18,19 +18,20 @@ func main() {
 
 	fmt.Println(cfg.Database)
 
-	if err := storage.Connect(cfg.Database); err != nil {
+	if err := postgres.Connect(cfg.Database); err != nil {
 		log.Fatal(err)
 	}
-	if err = storage.Migrate(); err != nil {
+	if err = postgres.Migrate(); err != nil {
 		log.Fatal(err)
 	}
-	defer storage.Close()
+	defer postgres.Close()
 
 	go func() {
 		parser.Run()
 	}()
 
-	if err = api.Run(cfg.Server); err != nil {
+	s := server.New(cfg.Server)
+	if err = s.Run(); err != nil {
 		log.Fatal(err)
 	}
 }

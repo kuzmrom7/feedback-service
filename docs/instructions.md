@@ -23,8 +23,3 @@
     ```
     ./main 
     ```
-
-----
-
-
-docker run --rm -e POSTGRES_USER=qwerty POSTGRES_DB=feedback POSTGRES_PASSWORD=test -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data postgres
