@@ -65,13 +65,13 @@ func (p *Parser) getReviews() {
 	url := getUrl(p.cfg.BaseURL, p.cfg.ChainId, p.cfg.Limit, offset)
 	reviews := requestReviews(url)
 
-	p.saveReviews(mappedTypes(reviews, p.cfg.ChainId))
+	p.saveReviews(reviews)
 
 	steps := total / p.cfg.Limit
 
 	for i := 0; i < steps; i++ {
 		if parsed {
-			continue
+			break
 		}
 
 		offset = offset + p.cfg.Limit
@@ -79,48 +79,15 @@ func (p *Parser) getReviews() {
 		url = getUrl(p.cfg.BaseURL, p.cfg.ChainId, p.cfg.Limit, offset)
 		reviews := requestReviews(url)
 
-		p.saveReviews(mappedTypes(reviews, p.cfg.ChainId))
+		p.saveReviews(reviews)
 
 		log.Println("Parsed", offset, "reviews")
 	}
 }
 
-func mappedTypes(rw *Reviews, chainId int64) repository.Reviews {
-	reviews := repository.Reviews{}
-	reviews.Total = rw.Total
+func (p *Parser) saveReviews(rw *Reviews) {
+	reviews := mappedTypes(rw, p.cfg.ChainId)
 
-	for _, r := range rw.Reviews {
-		review := repository.Review{
-			Author:    r.Author,
-			Body:      r.Body,
-			OrderHash: r.OrderHash,
-			RatedAt:   r.Rated,
-			PlaceId:   chainId,
-			Rate:      r.Icon,
-		}
-
-		var answers []repository.Answer
-
-		for _, a := range r.Answers {
-			answer := repository.Answer{
-				Answer:    a.Answer,
-				CreatedAt: a.CreatedAt,
-				SourceId:  a.SourceId,
-				StatusId:  a.StatusId,
-			}
-
-			answers = append(answers, answer)
-		}
-
-		review.Answers = answers
-
-		reviews.Data = append(reviews.Data, review)
-	}
-
-	return reviews
-}
-
-func (p *Parser) saveReviews(reviews repository.Reviews) {
 	/* Reviews that contain the latest in the repository */
 	if !reflect.DeepEqual(repository.Reviews{}, lastReview) {
 		data := sliceExtra(reviews.Data)
