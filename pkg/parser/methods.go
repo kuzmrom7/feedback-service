@@ -7,59 +7,20 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"reflect"
 )
 
-func (p *Parser) setToken() {
-	url := fmt.Sprintf("%s/user/login", p.cfg.BaseURL)
-
-	resp, err := httpClient.Post(url, "", nil)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	defer resp.Body.Close()
-
-	var result map[string]interface{}
-
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	token = fmt.Sprintf("%v", result["token"])
-	cooks = resp.Cookies()
+func getUrl(baseUrl string, chainId int64, limit int, offset int) string {
+	return fmt.Sprintf("%s/reviews?chainId=%v&limit=%v&offset=%v&cacheBreaker=1572361583", baseUrl, chainId, limit, offset)
 }
 
-func (p *Parser) getReviews() {
-	offset := 0
-
-	p.request(0)
-
-	steps := total / p.cfg.Limit
-
-	for i := 0; i < steps; i++ {
-		if parsed {
-			continue
-		}
-		offset = offset + p.cfg.Limit
-		p.request(offset)
-		log.Println("Parsed", offset, "reviews")
-	}
-}
-
-func (p *Parser) request(offset int) {
-	url := fmt.Sprintf("%s/reviews?chainId=%v&limit=%v&offset=%v&cacheBreaker=1572361583", p.cfg.BaseURL, p.cfg.ChainId, p.cfg.Limit, offset)
-
+func requestReviews(url string) *Reviews {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Println(err)
 	}
-
 	for _, cookie := range cooks {
 		req.AddCookie(cookie)
 	}
-
 	req.Header.Set("x-user-authorization", token)
 
 	resp, err := httpClient.Do(req)
@@ -68,36 +29,28 @@ func (p *Parser) request(offset int) {
 	}
 	defer resp.Body.Close()
 
-	reviews := &repository.Reviews{}
+	//reviews := &repository.Reviews{}
+
+	reviews := &Reviews{}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Println(err)
 	}
 
+	//err = json.Unmarshal(body, &reviews)
+	//if err != nil {
+	//	log.Println(err)
+	//}
+
+	///////
 	err = json.Unmarshal(body, &reviews)
 	if err != nil {
 		log.Println(err)
 	}
+	/////
 
-	/* Reviews that contain the latest in the repository */
-	if !reflect.DeepEqual(repository.Reviews{}, lastReview) {
-		data := sliceExtra(reviews.Data)
-		if data == nil {
-			return
-		}
-
-		reviews.Data = data
-	}
-
-	/* Save to repository */
-	err = p.reviewsRepository.AddReviews(reviews.Data)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	total = reviews.Total
+	return reviews
 }
 
 func sliceExtra(reviews []repository.Review) []repository.Review {

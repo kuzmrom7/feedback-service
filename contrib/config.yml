@@ -12,4 +12,4 @@ database:
 parser:
   base_url: "https://api.delivery-club.ru/api1.2"
   limit: 1000
-  chain_id: 28720
+  chain_id: 29276
