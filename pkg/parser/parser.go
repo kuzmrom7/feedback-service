@@ -65,7 +65,7 @@ func (p *Parser) getReviews() {
 	url := getUrl(p.cfg.BaseURL, p.cfg.ChainId, p.cfg.Limit, offset)
 	reviews := requestReviews(url)
 
-	p.saveReviews(mappedTypes(reviews))
+	p.saveReviews(mappedTypes(reviews, p.cfg.ChainId))
 
 	steps := total / p.cfg.Limit
 
@@ -79,13 +79,13 @@ func (p *Parser) getReviews() {
 		url = getUrl(p.cfg.BaseURL, p.cfg.ChainId, p.cfg.Limit, offset)
 		reviews := requestReviews(url)
 
-		p.saveReviews(mappedTypes(reviews))
+		p.saveReviews(mappedTypes(reviews, p.cfg.ChainId))
 
 		log.Println("Parsed", offset, "reviews")
 	}
 }
 
-func mappedTypes(rw *Reviews) repository.Reviews {
+func mappedTypes(rw *Reviews, chainId int64) repository.Reviews {
 	reviews := repository.Reviews{}
 	reviews.Total = rw.Total
 
@@ -94,8 +94,26 @@ func mappedTypes(rw *Reviews) repository.Reviews {
 			Author:    r.Author,
 			Body:      r.Body,
 			OrderHash: r.OrderHash,
-			Rated:     r.Rated,
+			RatedAt:   r.Rated,
+			PlaceId:   chainId,
+			Rate:      r.Icon,
 		}
+
+		var answers []repository.Answer
+
+		for _, a := range r.Answers {
+			answer := repository.Answer{
+				Answer:    a.Answer,
+				CreatedAt: a.CreatedAt,
+				SourceId:  a.SourceId,
+				StatusId:  a.StatusId,
+			}
+
+			answers = append(answers, answer)
+		}
+
+		review.Answers = answers
+
 		reviews.Data = append(reviews.Data, review)
 	}
 

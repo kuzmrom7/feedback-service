@@ -49,7 +49,7 @@ func initDB(cfg config.Database) (*gorm.DB, error) {
 
 	log.Println("Database connected")
 
-	if err := db.AutoMigrate(&repository.Review{}); err != nil {
+	if err := db.AutoMigrate(&repository.Review{}, &repository.Answer{}); err != nil {
 		log.Println("Migration failed")
 
 		return nil, err

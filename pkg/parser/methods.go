@@ -29,8 +29,6 @@ func requestReviews(url string) *Reviews {
 	}
 	defer resp.Body.Close()
 
-	//reviews := &repository.Reviews{}
-
 	reviews := &Reviews{}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -38,17 +36,10 @@ func requestReviews(url string) *Reviews {
 		log.Println(err)
 	}
 
-	//err = json.Unmarshal(body, &reviews)
-	//if err != nil {
-	//	log.Println(err)
-	//}
-
-	///////
 	err = json.Unmarshal(body, &reviews)
 	if err != nil {
 		log.Println(err)
 	}
-	/////
 
 	return reviews
 }

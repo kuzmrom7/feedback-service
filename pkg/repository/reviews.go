@@ -1,6 +1,8 @@
 package repository
 
-import "time"
+import (
+	"time"
+)
 
 type Review struct {
 	ID        uint      `json:"id" gorm:"primarykey"`
@@ -9,8 +11,10 @@ type Review struct {
 	Author    string    `json:"author"`
 	Body      string    `json:"body"`
 	OrderHash string    `json:"order_hash"`
-	Rated     string    `json:"rated" gorm:"type:time"`
-	Rating    int       `json:"rating"`
+	RatedAt   string    `json:"rated_at" gorm:"type:time"`
+	PlaceId   int64     `json:"place_id"`
+	Rate      string    `json:"rate"`
+	Answers   []Answer  `json:"answers" gorm:"foreignKey:ReviewId"`
 }
 
 type Reviews struct {

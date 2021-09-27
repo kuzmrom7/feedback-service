@@ -47,7 +47,7 @@ func (r *ReviewsRepository) GetReviews(rq repository.ReviewQuery) ([]repository.
 		offset = (rq.Page * LIMIT) - 100
 	}
 
-	if _, err := r.db.Limit(LIMIT).Offset(offset).Order("rated desc").Find(&reviews).DB(); err != nil {
+	if _, err := r.db.Limit(LIMIT).Offset(offset).Preload("Answers").Order("rated_at desc").Find(&reviews).DB(); err != nil {
 		log.Println(err)
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (r *ReviewsRepository) GetReviews(rq repository.ReviewQuery) ([]repository.
 
 func (r *ReviewsRepository) GetLastReview() (repository.Review, error) {
 	var review repository.Review
-	result := r.db.Order("rated desc").Find(&review)
+	result := r.db.Order("rated_at desc").Find(&review)
 
 	if result.Error != nil {
 		return review, result.Error
