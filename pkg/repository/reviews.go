@@ -8,7 +8,7 @@ type Review struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	Author    string    `json:"author"`
 	Body      string    `json:"body"`
-	OrderHash string    `json:"order_hash"`
+	OrderHash string    `json:"orderHash"`
 	Rated     string    `json:"rated" gorm:"type:time"`
 	Rating    int       `json:"rating"`
 }

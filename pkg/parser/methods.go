@@ -22,14 +22,12 @@ func (p *Parser) setToken() {
 
 	var result map[string]interface{}
 
-	fmt.Println(resp.Body)
-
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	Token = fmt.Sprintf("%v", result["token"])
+	token = fmt.Sprintf("%v", result["token"])
 	cooks = resp.Cookies()
 }
 
@@ -62,7 +60,7 @@ func (p *Parser) request(offset int) {
 		req.AddCookie(cookie)
 	}
 
-	req.Header.Set("x-user-authorization", Token)
+	req.Header.Set("x-user-authorization", token)
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -100,7 +98,6 @@ func (p *Parser) request(offset int) {
 	}
 
 	total = reviews.Total
-
 }
 
 func sliceExtra(reviews []repository.Review) []repository.Review {

@@ -2,11 +2,11 @@ server:
   port: 8080
 
 database:
-  dbname: "postgres"
+  dbname: "feedback"
   dbhost: "localhost"
   dbsslmode: "disable"
-  dbuser: "postgres"
-  dbpassword: "test"
+  dbuser: "r.kuzmenko"
+  dbpassword: "123123"
   dbport: 5432
 
 parser:

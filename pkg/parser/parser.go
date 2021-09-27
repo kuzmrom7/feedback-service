@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	Token      string
+	token      string
 	httpClient = &http.Client{}
 	cooks      []*http.Cookie
 	total      int
