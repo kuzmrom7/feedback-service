@@ -17,6 +17,7 @@ func NewParser(cfg config.Parser, rw repository.ReviewsRepository) *Parser {
 }
 
 func (p *Parser) Run() {
+	log.Println("Parser started....")
 	offset := 0
 
 	review, err := p.reviewsRepository.GetLastReview()
@@ -36,11 +37,14 @@ func (p *Parser) Run() {
 	steps := int(math.Ceil(float64(p.total) / float64(p.cfg.Limit)))
 
 	for i := 0; i < steps; i++ {
-		offset += p.cfg.Limit
+		if p.parsed {
+			break
+		}
 
+		offset += p.cfg.Limit
 		reviews := p.requestReviews(offset)
 
-		log.Println("Parsed new", offset, "reviews")
+		log.Println(offset, "reviews parsed")
 
 		if p.parsed {
 			p.updateReviews(reviews)
@@ -49,4 +53,6 @@ func (p *Parser) Run() {
 
 		p.addReviews(reviews)
 	}
+
+	log.Println("Parser done")
 }

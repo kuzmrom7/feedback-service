@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"errors"
 	"github.com/kuzmrom7/feedback-service/pkg/repository"
 	"gorm.io/gorm"
 	"log"
@@ -43,6 +44,10 @@ func (r *ReviewsRepository) GetReviews(rq repository.ReviewQuery) ([]repository.
 		offset  int
 	)
 
+	if rq.Page < 0 {
+		return nil, errors.New("page cannot be negative number")
+	}
+
 	if rq.Page > 0 {
 		offset = (rq.Page * LIMIT) - 100
 	}
@@ -65,4 +70,3 @@ func (r *ReviewsRepository) GetLastReview() (repository.Review, error) {
 
 	return review, nil
 }
-

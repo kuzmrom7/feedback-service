@@ -34,6 +34,7 @@ func (p *Parser) sliceExtra(reviews []repository.Review) []repository.Review {
 	for i, review := range reviews {
 		if review.OrderHash == p.lastReview.OrderHash {
 			slicedRws := reviews[0:i]
+
 			p.parsed = true
 
 			if len(slicedRws) == 0 {

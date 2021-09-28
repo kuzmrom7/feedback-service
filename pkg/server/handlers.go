@@ -2,58 +2,56 @@ package server
 
 import (
 	"github.com/kuzmrom7/feedback-service/pkg/repository"
-	response "github.com/kuzmrom7/feedback-service/pkg/utils"
-	"math"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 )
 
-// LIMIT TODO: update limit
 const LIMIT = 100
 
 func (s *Server) handleGetReviews(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	log.Printf("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
+
 	var rq repository.ReviewQuery
+	respErr := &ResponseError{}
 
 	q := r.URL.Query()
-	rq.Sort = q.Get("sort")
-	rq.Answers = q.Get("answers")
-	rq.Page, _ = strconv.Atoi(q.Get("page"))
+
+	qPage := q["page"]
+	qSort := q.Get("sort")
+	qAnswers := q.Get("answers")
+
+	if qPage == nil {
+		qPage = append(qPage, "1")
+	}
+
+	page, err := strconv.Atoi(qPage[0])
+
+	if err != nil {
+		respErr.Message = err.Error()
+		respErr.Respond(w, http.StatusInternalServerError)
+		return
+	}
+
+	rq.Page = page
+	rq.Sort = qSort
+	rq.Answers = qAnswers
 
 	reviews, err := s.reviewsRepository.GetReviews(rq)
 	if err != nil {
-		response.New("select error", false).WithError(err).Respond(w)
+		respErr.Message = err.Error()
+		respErr.Respond(w, http.StatusInternalServerError)
+		return
 	}
 
 	reviewTotal, err := s.reviewsRepository.GetReviewsCount()
 	if err != nil {
+		respErr.Message = err.Error()
+		respErr.Respond(w, http.StatusInternalServerError)
 		return
 	}
-	resp := s.createResponse(reviewTotal, rq.Page, reviews)
 
-	response.New("success", true).WithData(&resp).Respond(w)
-}
-
-//TODO:fix this method
-func (s *Server) createResponse(reviewsTotal int64, page int, reviews []repository.Review) ResponseReviews {
-	pagesCount := int(math.Ceil(float64(reviewsTotal) / float64(LIMIT)))
-	if page == 0 {
-		page = 1
-	}
-
-	nextPage := 0
-
-	if page <= 0 {
-		nextPage = 0
-		page = 0
-	} else if pagesCount >= page+1 {
-		nextPage = page + 1
-	} else {
-		nextPage = -1
-	}
-
-	resp := ResponseReviews{Pages: pagesCount, Page: page, Reviews: reviews, NextPage: nextPage}
-
-	return resp
+	NewResponseReviews(reviewTotal, rq.Page, reviews).SuccessRespond(w)
 }

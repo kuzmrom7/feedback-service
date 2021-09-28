@@ -1,13 +1,13 @@
 package server
 
 import (
-	"github.com/kuzmrom7/feedback-service/pkg/repository"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/kuzmrom7/feedback-service/pkg/config"
+	"github.com/kuzmrom7/feedback-service/pkg/repository"
 )
 
 type Server struct {
