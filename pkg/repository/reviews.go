@@ -1,11 +1,13 @@
 package repository
 
 import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"time"
 )
 
 type Review struct {
-	ID        uint      `json:"id" gorm:"primarykey"`
+	ID        string    `json:"id" gorm:"primary_key;type:uuid;"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Author    string    `json:"author"`
@@ -15,6 +17,11 @@ type Review struct {
 	PlaceId   int64     `json:"place_id"`
 	Rate      string    `json:"rate"`
 	Answers   []Answer  `json:"answers" gorm:"foreignKey:ReviewId"`
+}
+
+func (a *Review) BeforeCreate(tx *gorm.DB) (err error) {
+	a.ID = uuid.NewString()
+	return
 }
 
 type Reviews struct {

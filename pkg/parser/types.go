@@ -7,12 +7,12 @@ import (
 )
 
 type Parser struct {
-	cfg               config.Parser
-	reviewsRepository repository.ReviewsRepository
 	token             string
-	cooks             []*http.Cookie
 	total             int
 	parsed            bool
+	cfg               config.Parser
+	reviewsRepository repository.ReviewsRepository
+	cooks             []*http.Cookie
 	lastReview        repository.Review
 }
 
@@ -22,13 +22,13 @@ type Reviews struct {
 }
 
 type Review struct {
-	Answers   []Answer  `json:"answers"`
 	Author    string    `json:"author"`
 	Body      string    `json:"body"`
 	Icon      string    `json:"icon"`
 	OrderHash string    `json:"orderHash"`
 	Rated     string    `json:"rated"`
 	Products  []Product `json:"products"`
+	Answers   []Answer  `json:"answers"`
 }
 
 type Product struct {

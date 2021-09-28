@@ -34,7 +34,7 @@ func (p *Parser) requestReviews(offset int) *Reviews {
 	url := getUrl(p.cfg.BaseURL, p.cfg.ChainId, p.cfg.Limit, offset)
 
 	if p.parsed {
-		time.Sleep(3 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 
 	req, err := http.NewRequest("GET", url, nil)
