@@ -31,7 +31,6 @@ type Reviews struct {
 
 type ReviewQuery struct {
 	Sort    string
-	Answers string
 	Page    int
 }
 

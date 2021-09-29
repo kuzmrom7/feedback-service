@@ -21,7 +21,6 @@ func (s *Server) handleGetReviews(w http.ResponseWriter, r *http.Request, ps htt
 
 	qPage := q["page"]
 	qSort := q.Get("sort")
-	qAnswers := q.Get("answers")
 
 	if qPage == nil {
 		qPage = append(qPage, "1")
@@ -37,7 +36,6 @@ func (s *Server) handleGetReviews(w http.ResponseWriter, r *http.Request, ps htt
 
 	rq.Page = page
 	rq.Sort = qSort
-	rq.Answers = qAnswers
 
 	reviews, err := s.reviewsRepository.GetReviews(rq)
 	if err != nil {
