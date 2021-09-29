@@ -9,11 +9,12 @@ import (
 type Parser struct {
 	token             string
 	total             int
-	parsed            bool
+	lastFound         bool
 	cfg               config.Parser
 	reviewsRepository repository.ReviewsRepository
 	cooks             []*http.Cookie
 	lastReview        repository.Review
+	offset            int
 }
 
 type Reviews struct {

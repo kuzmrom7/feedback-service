@@ -70,3 +70,21 @@ func (r *ReviewsRepository) GetLastReview() (repository.Review, error) {
 
 	return review, nil
 }
+
+func (r *ReviewsRepository) UpdateReview(rw repository.Review) error {
+	//result := r.db.Model(&repository.Review{}).
+	//	Where(repository.Review{OrderHash: rw.OrderHash}).
+	//	Assign(&rw).
+	//	FirstOrCreate(&rw)
+
+	//result:= r.db.Session(&gorm.Session{FullSaveAssociations: true}).
+	//	Where(repository.Review{Body: rw.Body}).
+	//	Updates(&rw)
+	//
+	//
+	//if result.Error != nil {
+	//	return result.Error
+	//}
+
+	return nil
+}

@@ -8,8 +8,8 @@ import (
 
 type Review struct {
 	ID        string    `json:"id" gorm:"primary_key;type:uuid;"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at" gorm:"type:time"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"type:time"`
 	Author    string    `json:"author"`
 	Body      string    `json:"body"`
 	OrderHash string    `json:"order_hash"`
@@ -44,4 +44,5 @@ type ReviewsRepository interface {
 	GetLastReview() (Review, error)
 	GetReviewsCount() (int64, error)
 	AddReviews(rw []Review) error
+	UpdateReview(rw Review) error
 }

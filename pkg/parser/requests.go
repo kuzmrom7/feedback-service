@@ -30,13 +30,14 @@ func (p *Parser) setupCookies() {
 	p.cooks = resp.Cookies()
 }
 
-func (p *Parser) requestReviews(offset int) *Reviews {
-	url := getUrl(p.cfg.BaseURL, p.cfg.ChainId, p.cfg.Limit, offset)
+func (p *Parser) requestReviews() *Reviews {
+	url := getUrl(p.cfg.BaseURL, p.cfg.ChainId, p.cfg.Limit, p.offset)
 
-	if p.parsed {
+	if p.lastFound {
 		time.Sleep(1 * time.Second)
 	}
 
+	log.Println("New request to reviews url", url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Println(err)

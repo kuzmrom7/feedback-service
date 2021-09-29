@@ -13,46 +13,88 @@ var (
 )
 
 func NewParser(cfg config.Parser, rw repository.ReviewsRepository) *Parser {
-	return &Parser{reviewsRepository: rw, cfg: cfg}
+	return &Parser{reviewsRepository: rw, cfg: cfg, offset: 0}
 }
 
 func (p *Parser) Run() {
 	log.Println("Parser started....")
-	offset := 0
 
 	review, err := p.reviewsRepository.GetLastReview()
 	if err != nil {
-		log.Println("Parser stop with errors = ",err)
+		log.Println("Parser stop with errors = ", err)
 		return
 	}
 	p.lastReview = review
 
-	log.Println("Last review found = ", p.lastReview)
-	p.setupCookies()
+	log.Println("Last review found")
 
-	// first req for getting totals
-	reviews := p.requestReviews(offset)
-	p.addReviews(reviews)
+	p.setupCookies()
+	p.addReviews()
 
 	steps := int(math.Ceil(float64(p.total) / float64(p.cfg.Limit)))
 
 	for i := 0; i < steps; i++ {
-		if p.parsed {
-			break
-		}
+		p.offset = p.offset + p.cfg.Limit
 
-		offset += p.cfg.Limit
-		reviews := p.requestReviews(offset)
-
-		log.Println(offset, "reviews parsed")
-
-		if p.parsed {
-			p.updateReviews(reviews)
+		if !p.lastFound {
+			p.addReviews()
 			continue
 		}
 
-		p.addReviews(reviews)
+		//p.updateReviews()
 	}
 
 	log.Println("Parser done")
+}
+
+func (p *Parser) addReviews() {
+	rw := p.requestReviews()
+	reviews := mappedTypes(rw, p.cfg.ChainId)
+
+	data := p.sliceExtra(reviews.Data)
+
+	if data != nil {
+		err := p.reviewsRepository.AddReviews(data)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println("Add", len(reviews.Data), "new reviews")
+	}
+
+	p.total = reviews.Total
+}
+
+func (p *Parser) updateReviews() {
+	rw := p.requestReviews()
+
+	reviews := mappedTypes(rw, p.cfg.ChainId)
+	for _, r := range reviews.Data {
+		if err := p.reviewsRepository.UpdateReview(r); err != nil {
+			log.Println(err)
+		}
+	}
+
+	log.Println("Update", len(reviews.Data), "reviews")
+}
+
+//TODO: refactor need
+func (p *Parser) sliceExtra(reviews []repository.Review) []repository.Review {
+	for i, review := range reviews {
+		if review.OrderHash == p.lastReview.OrderHash {
+			slicedRws := reviews[0:i]
+
+			p.lastFound = true
+			p.offset = p.offset - p.cfg.Limit
+
+			if len(slicedRws) == 0 {
+				log.Println("Last review actual!")
+				return nil
+			}
+			log.Println("Detected", len(slicedRws), "new reviews!")
+			return slicedRws
+		}
+	}
+
+	return reviews
 }
